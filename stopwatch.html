@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스톱워치</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .time-display {
+            font-size: 64px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .start-btn:hover {
+            background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+        }
+
+        .pause-btn {
+            background: linear-gradient(135deg, #ff9800 0%, #e68900 100%);
+            color: white;
+        }
+
+        .pause-btn:hover {
+            background: linear-gradient(135deg, #e68900 0%, #cc7700 100%);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: linear-gradient(135deg, #da190b 0%, #c0170a 100%);
+        }
+
+        .reset-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reset-btn:disabled:hover {
+            transform: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>스톱워치</h1>
+        <div class="time-display" id="timeDisplay">00:00:00.00</div>
+        <div class="buttons">
+            <button class="start-btn" id="startPauseBtn" onclick="toggleStartPause()">시작</button>
+            <button class="reset-btn" id="resetBtn" onclick="reset()" disabled>리셋</button>
+        </div>
+    </div>
+
+    <script>
+        let running = false;
+        let startTime = null;
+        let elapsedTime = 0;
+        let timerInterval = null;
+
+        const timeDisplay = document.getElementById('timeDisplay');
+        const startPauseBtn = document.getElementById('startPauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            const milliseconds = Math.floor((ms % 1000) / 10);
+
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(2, '0')}`;
+        }
+
+        function updateDisplay() {
+            if (running) {
+                elapsedTime = Date.now() - startTime;
+            }
+            timeDisplay.textContent = formatTime(elapsedTime);
+        }
+
+        function toggleStartPause() {
+            if (!running) {
+                // 시작
+                running = true;
+                startTime = Date.now() - elapsedTime;
+                startPauseBtn.textContent = '일시정지';
+                startPauseBtn.className = 'pause-btn';
+                resetBtn.disabled = false;
+                timerInterval = setInterval(updateDisplay, 10);
+            } else {
+                // 일시정지
+                running = false;
+                startPauseBtn.textContent = '시작';
+                startPauseBtn.className = 'start-btn';
+                clearInterval(timerInterval);
+            }
+        }
+
+        function reset() {
+            running = false;
+            elapsedTime = 0;
+            startTime = null;
+            startPauseBtn.textContent = '시작';
+            startPauseBtn.className = 'start-btn';
+            resetBtn.disabled = true;
+            clearInterval(timerInterval);
+            updateDisplay();
+        }
+
+        // 초기 표시
+        updateDisplay();
+    </script>
+</body>
+</html>
+
+
